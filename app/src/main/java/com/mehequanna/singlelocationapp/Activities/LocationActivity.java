@@ -36,6 +36,7 @@ public class LocationActivity extends AppCompatActivity {
 
     // This field is used to keep track of whether the user has
     private boolean permissionGranted;
+    private CustomLocationListener customLocationListenerInstance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,15 +45,6 @@ public class LocationActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         permissionGranted = false;
-
-        // Set up gpsListener
-        // TODO Use singleton?
-        gpsListener = new CustomLocationListener(new LocationDataReceiver() {
-            @Override
-            public void receiveLocationData(double latitude, double longitude, float accuracy, double altitude) {
-                setLocation(latitude, longitude, accuracy, altitude);
-            }
-        });
     }
 
     /**
@@ -73,7 +65,9 @@ public class LocationActivity extends AppCompatActivity {
 
         if (permissionGranted) {
             if (locationManager != null) {
-                // The information returned by this method is handled by the CustomLocationListener class.
+                gpsListener = getLocationListener();
+
+                // The information returned by the locationManager is handled by the gpsListener.
                 locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, gpsListener, null);
             } else {
                 Toast.makeText(this, "Unable to find location", Toast.LENGTH_SHORT).show();
@@ -112,5 +106,27 @@ public class LocationActivity extends AppCompatActivity {
         longitudeTextView.setText(longitudeText);
         altitudeTextView.setText(altitudeText);
         accuracyTextView.setText(accuracyText);
+    }
+
+    /**
+     * The method returns a CustomLocationListener singleton.
+     * Note: Synchronization is used for a more thread safe singleton.
+     *
+     * @return CustomLocationListener
+     */
+    public CustomLocationListener getLocationListener() {
+        if (customLocationListenerInstance == null) {
+            synchronized (CustomLocationListener.class) {
+                if (customLocationListenerInstance == null) {
+                    customLocationListenerInstance = new CustomLocationListener(new LocationDataReceiver() {
+                        @Override
+                        public void receiveLocationData(double latitude, double longitude, float accuracy, double altitude) {
+                            setLocation(latitude, longitude, accuracy, altitude);
+                        }
+                    });
+                }
+            }
+        }
+        return customLocationListenerInstance;
     }
 }
