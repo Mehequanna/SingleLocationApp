@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mehequanna.singlelocationapp.Listeners.CustomLocationListener;
+import com.mehequanna.singlelocationapp.Listeners.LocationDataReceiver;
 import com.mehequanna.singlelocationapp.R;
 
 import butterknife.BindView;
@@ -46,8 +47,12 @@ public class LocationActivity extends AppCompatActivity {
 
         // Set up gpsListener
         // TODO Use singleton?
-        gpsListener = new CustomLocationListener();
-        gpsListener.setActivity(this);
+        gpsListener = new CustomLocationListener(new LocationDataReceiver() {
+            @Override
+            public void receiveLocationData(double latitude, double longitude, float accuracy, double altitude) {
+                setLocation(latitude, longitude, accuracy, altitude);
+            }
+        });
     }
 
     /**

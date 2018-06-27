@@ -5,17 +5,16 @@ import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.mehequanna.singlelocationapp.Activities.LocationActivity;
-
 /**
  * This listener is used to handle the location information requested by the Location Manager.
  */
-public class CustomLocationListener implements LocationListener {
-    private LocationActivity activity;
+public class CustomLocationListener implements LocationListener{
+    // Used as a log tag.
     private final String simpleClassName = this.getClass().getSimpleName();
+    private LocationDataReceiver locationDataReceiver;
 
-    public void setActivity(LocationActivity locationActivity) {
-        activity = locationActivity;
+    public CustomLocationListener(LocationDataReceiver locationDataReceiver) {
+        this.locationDataReceiver = locationDataReceiver;
     }
 
     @Override
@@ -27,11 +26,10 @@ public class CustomLocationListener implements LocationListener {
         long time = location.getTime();
         double altitude = location.getAltitude();
 
-        // TODO: Replace with receiver.
-        if (activity != null) {
-            activity.setLocation(latitude, longitude, accuracy, altitude);
-        }
+        // Sends the data to the Location Activity.
+        locationDataReceiver.receiveLocationData(latitude, longitude, accuracy, altitude);
 
+        // Logs the location information
         String logMessage =
                 "Provider Name: " + provider +
                 ". Latitude: " + latitude +
@@ -39,7 +37,6 @@ public class CustomLocationListener implements LocationListener {
                 ". Accuracy: " + accuracy +
                 ". Time: " + time +
                 ". Altitude: " + altitude + ".";
-
         Log.i(simpleClassName, "onLocationChanged: " + logMessage);
     }
 
