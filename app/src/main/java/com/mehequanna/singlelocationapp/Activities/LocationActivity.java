@@ -45,6 +45,7 @@ public class LocationActivity extends AppCompatActivity {
         permissionGranted = false;
 
         // Set up gpsListener
+        // TODO Use singleton?
         gpsListener = new CustomLocationListener();
         gpsListener.setActivity(this);
     }

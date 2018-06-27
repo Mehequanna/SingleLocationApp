@@ -1,5 +1,5 @@
 ## Project Name
-LocateMe
+Single Location App
 
 ## Description
 This is a proof of concept app that records the user's location. It will display the user's longitude, latitude, accuracy, and altitude to the screen on a button push.

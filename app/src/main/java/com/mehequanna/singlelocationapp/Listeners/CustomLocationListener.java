@@ -33,12 +33,12 @@ public class CustomLocationListener implements LocationListener {
         }
 
         String logMessage =
-                "Provider Name: " + String.valueOf(provider) +
-                ". Latitude: " + String.valueOf(latitude) +
-                ". Longitude: " + String.valueOf(longitude) +
-                ". Accuracy: " + String.valueOf(accuracy) +
-                ". Time: " + String.valueOf(time) +
-                ". Altitude: " + String.valueOf(altitude) + ".";
+                "Provider Name: " + provider +
+                ". Latitude: " + latitude +
+                ". Longitude: " + longitude +
+                ". Accuracy: " + accuracy +
+                ". Time: " + time +
+                ". Altitude: " + altitude + ".";
 
         Log.i(simpleClassName, "onLocationChanged: " + logMessage);
     }
