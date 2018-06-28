@@ -51,7 +51,7 @@ public class LocationActivity extends AppCompatActivity {
     }
 
     /**
-     * Checks if the application has permission to access the devices fine location.
+     * Checks if the application has permission to access the device's fine location.
      * If permission is denied, no location information will be requested. Alert dialog will show to request permission.
      * If permission is granted, the location information will be requested from the location manager.
      */
@@ -94,7 +94,7 @@ public class LocationActivity extends AppCompatActivity {
                     getLocation();
                     Log.i(simpleClassName, "onRequestPermissionsResult: Accepted");
                 } else {
-                    Toast.makeText(this, "This app requires device location to work", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "This app requires the device's location to work", Toast.LENGTH_LONG).show();
                     permissionGranted = false;
                     Log.i(simpleClassName, "onRequestPermissionsResult: Denied");
                 }
