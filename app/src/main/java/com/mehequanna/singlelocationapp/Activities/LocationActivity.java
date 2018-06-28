@@ -24,18 +24,23 @@ import static com.mehequanna.singlelocationapp.R.id.get_location_button;
 
 
 public class LocationActivity extends AppCompatActivity {
-    private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 12;
-
     @BindView(R.id.accuracy_text_view) TextView accuracyTextView;
     @BindView(R.id.altitude_text_view) TextView altitudeTextView;
     @BindView(R.id.longitude_text_view) TextView longitudeTextView;
     @BindView(R.id.latitude_text_view) TextView latitudeTextView;
 
-    CustomLocationListener gpsListener;
-    private final String simpleClassName = this.getClass().getSimpleName();
+    /**
+     * Application specific request code used with onRequestPermissionsResult().
+     */
+    private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 12;
 
-    // This field is used to keep track of whether the user has
-    private boolean permissionGranted;
+    /**
+     * This field is used to keep track of whether the user has allowed access to location data.
+     */
+    private boolean permissionGranted = false;
+
+    // Used as log tag.
+    private final String simpleClassName = this.getClass().getSimpleName();
     private CustomLocationListener customLocationListenerInstance;
 
     @Override
@@ -43,14 +48,12 @@ public class LocationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
         ButterKnife.bind(this);
-
-        permissionGranted = false;
     }
 
     /**
      * Checks if the application has permission to access the devices fine location.
-     * If permission is denied, no location information will be requested.
-     * If permission is accepted, the location information will be requested from the location manager.
+     * If permission is denied, no location information will be requested. Alert dialog will show to request permission.
+     * If permission is granted, the location information will be requested from the location manager.
      */
     @OnClick(get_location_button)
     public void getLocation() {
@@ -65,26 +68,37 @@ public class LocationActivity extends AppCompatActivity {
 
         if (permissionGranted) {
             if (locationManager != null && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                gpsListener = getLocationListener();
+                CustomLocationListener gpsListener = getLocationListener();
 
                 // The information returned by the locationManager is handled by the gpsListener.
                 locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, gpsListener, null);
             } else {
+                if (locationManager == null) {
+                    Log.e(simpleClassName, "Location manager not instantiated.");
+                } else if (!locationManager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER)) {
+                    Log.e(simpleClassName, "Location manager gps provider not available.");
+                } else {
+                    Log.e(simpleClassName, "Location manager failed in an unknown way.");
+                }
                 Toast.makeText(this, "Unable to find location", Toast.LENGTH_SHORT).show();
-                Log.e(simpleClassName, "Location manager not instantiated.");
             }
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            permissionGranted = true;
-            getLocation();
-            Log.i(simpleClassName, "onRequestPermissionsResult: Accepted");
-        } else {
-            permissionGranted = false;
-            Log.i(simpleClassName, "onRequestPermissionsResult: Denied");
+        switch (requestCode) {
+            case MY_PERMISSION_ACCESS_FINE_LOCATION: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    permissionGranted = true;
+                    getLocation();
+                    Log.i(simpleClassName, "onRequestPermissionsResult: Accepted");
+                } else {
+                    Toast.makeText(this, "This app requires device location to work", Toast.LENGTH_LONG).show();
+                    permissionGranted = false;
+                    Log.i(simpleClassName, "onRequestPermissionsResult: Denied");
+                }
+            }
         }
     }
 
