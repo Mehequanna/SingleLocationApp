@@ -64,7 +64,7 @@ public class LocationActivity extends AppCompatActivity {
         }
 
         if (permissionGranted) {
-            if (locationManager != null) {
+            if (locationManager != null && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 gpsListener = getLocationListener();
 
                 // The information returned by the locationManager is handled by the gpsListener.
